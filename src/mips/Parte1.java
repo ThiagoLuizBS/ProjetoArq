@@ -231,10 +231,10 @@ public class Parte1 {
 			res = res + " ";
 			res = res + "$" + binDecimal(b.substring(6, 11)) + ", ";
 			res = res + "$" + binDecimal(b.substring(11, 16)) + ", ";
-			if(b.substring(16,32).equalsIgnoreCase("1111111111101100") ||
-					b.substring(16,32).equalsIgnoreCase("1111111111101101")) {
+			/*if(b.substring(16,32).equalsIgnoreCase("1111111111101100") ||
+					b.substring(16,32).equalsIgnoreCase("1111111111101101")) {*/
 				res = res + "start";
-			}
+			//}
 		}
 		return res;
 	}
@@ -316,9 +316,9 @@ private String registradorIDuplo(String res, String b) {
 			res = "jal";
 		}
 		res = res + " ";
-		if(b.substring(6,32).equalsIgnoreCase("00000100000000000000000000")) {
+		//if(b.substring(6,32).equalsIgnoreCase("00000100000000000000000000")) {
 			res = res + "start";
-		}
+		//}
 		return res;
 	}
 	
