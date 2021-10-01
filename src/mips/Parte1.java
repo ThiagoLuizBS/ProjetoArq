@@ -1,8 +1,5 @@
 package mips;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,6 +7,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class Parte1 {
+	//registradores que serão usados mais a frente
 	public ArrayList<String> registradores(){
 		ArrayList<String> r = new ArrayList<>();
 		r.add("$zero");
@@ -66,7 +64,8 @@ public class Parte1 {
 	        bin += binFragment;
 	    }
 	    return bin;
-	    
+	}
+	
 	/* Instrucoes tipo R 
 	 * opcode 6 bits / rs e rt (operando) 5 bits cada/ rd (resultante) 5 bits / sh 5 bits / opcode funcao 6 bits
 	 * 
@@ -76,13 +75,14 @@ public class Parte1 {
 	 *  Instrucoes tipo J
 	 *  opcode 6 bits / memory word adress 26 bits
 	 */	  
-	}
 	
+	//transformar binario para decimal
 	private int binDecimal(String x) {
 		int numero = Integer.parseInt(x, 2);
 		return numero;
 	}
 	
+	//achar a operação pelo opcode: syscall, R, I ou J
 	public String acharOp(String b) {
 		String res = "";
 		
@@ -104,12 +104,14 @@ public class Parte1 {
 		return res;
 	}
 	
+	//comando syscall
 	private String syscall(String res) {
 		res = "syscall";
 		return res;
 	}
 	
-	private String registradorTriplo(String res, String b) {
+	//tipos de registradores R que possuem 3 argumentos finais
+	private String registradorRTriplo(String res, String b) {
 		if(res == "sllv" || res == "srlv" || res == "srav") {
 			res = res + " ";
 			res = res + "$" + binDecimal(b.substring(16, 21)) + ", ";
@@ -124,7 +126,8 @@ public class Parte1 {
 		return res;
 	}
 	
-	private String registradorDuplo(String res, String b) {
+	//tipos de registradores R que possuem 2 argumentos finais
+	private String registradorRDuplo(String res, String b) {
 		if(res == "mult" ||	res == "multu" || res == "div" || res == "divu") {
 			res = res + " ";
 			res = res + "$" + binDecimal(b.substring(6, 11)) + ", ";
@@ -138,7 +141,8 @@ public class Parte1 {
 		return res;
 	}
 	
-	private String registradorUnico(String res, String b) {
+	//tipos de registradores R que possuem 1 único argumento final
+	private String registradorRUnico(String res, String b) {
 		if(res == "jr") {
 			res = res + " ";		
 			res = res + "$" + binDecimal(b.substring(6, 11));
@@ -149,78 +153,79 @@ public class Parte1 {
 		return res;
 	}
 	
+	//achar a função R comparando com os ultimos 6 bits
 	private String tipoR(String res, String b) {
 		if(b.substring(26, 32).equalsIgnoreCase("100000")) {
 			res = "add";
-			res = registradorTriplo(res,b);
+			res = registradorRTriplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("100010")) {
 			res = "sub";
-			res = registradorTriplo(res,b);
+			res = registradorRTriplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("101010")) {
 			res = "slt";
-			res = registradorTriplo(res,b);
+			res = registradorRTriplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("100100")) {
 			res = "and";
-			res = registradorTriplo(res,b);
+			res = registradorRTriplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("100101")) {
 			res = "or";	
-			res = registradorTriplo(res,b);
+			res = registradorRTriplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("100110")) {
 			res = "xor";
-			res = registradorTriplo(res,b);
+			res = registradorRTriplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("100111")) {
 			res = "nor";
-			res = registradorTriplo(res,b);
+			res = registradorRTriplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("010000")) {
 			res = "mfhi";
-			res = registradorUnico(res,b);
+			res = registradorRUnico(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("010010")) {
 			res = "mflo";
-			res = registradorUnico(res,b);
+			res = registradorRUnico(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("100001")) {
 			res = "addu";	
-			res = registradorTriplo(res,b);
+			res = registradorRTriplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("100011")) {
 			res = "subu";	
-			res = registradorTriplo(res,b);
+			res = registradorRTriplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("011000")) {
 			res = "mult";	
-			res = registradorDuplo(res,b);
+			res = registradorRDuplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("011001")) {
 			res = "multu";	
-			res = registradorDuplo(res,b);
+			res = registradorRDuplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("011010")) {
 			res = "div";
-			res = registradorDuplo(res,b);
+			res = registradorRDuplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("011011")) {
 			res = "divu";
-			res = registradorDuplo(res,b);
+			res = registradorRDuplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("000000")) {
 			res = "sll";
-			res = registradorDuplo(res,b);
+			res = registradorRDuplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("000010")) {
 			res = "srl";
-			res = registradorDuplo(res,b);
+			res = registradorRDuplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("000011")) {
 			res = "sra";
-			res = registradorDuplo(res,b);
+			res = registradorRDuplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("000100")) {
 			res = "sllv";	
-			res = registradorTriplo(res,b);
+			res = registradorRTriplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("000110")) {
 			res = "srlv";	
-			res = registradorTriplo(res,b);
+			res = registradorRTriplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("000111")) {
 			res = "srav";
-			res = registradorTriplo(res,b);
+			res = registradorRTriplo(res,b);
 		} else if(b.substring(26, 32).equalsIgnoreCase("001000")) {
 			res = "jr";		
-			res = registradorUnico(res,b);
-		} 
-		
+			res = registradorRUnico(res,b);
+		} 		
 		return res;		
 	}
 	
+	//tipos de registradores I que possuem 3 argumentos finais
 	private String registradorITriplo(String res, String b) {
 		if(res == "addi" || res == "slti" || res == "andi" || res == "ori" || res == "xori" || res == "addiu") {
 			res = res + " ";
@@ -231,15 +236,14 @@ public class Parte1 {
 			res = res + " ";
 			res = res + "$" + binDecimal(b.substring(6, 11)) + ", ";
 			res = res + "$" + binDecimal(b.substring(11, 16)) + ", ";
-			/*if(b.substring(16,32).equalsIgnoreCase("1111111111101100") ||
-					b.substring(16,32).equalsIgnoreCase("1111111111101101")) {*/
-				res = res + "start";
-			//}
+			//o start não esta sendo tratado ainda, apenas retornando o start
+			res = res + "start";
 		}
 		return res;
 	}
 	
-private String registradorIDuplo(String res, String b) {
+	//tipos de registradores I que possuem 2 argumentos finais
+	private String registradorIDuplo(String res, String b) {
 		if(res == "lui") {
 			res = res + " ";
 			res = res + "$" + binDecimal(b.substring(11, 16)) + ", ";
@@ -259,6 +263,7 @@ private String registradorIDuplo(String res, String b) {
 		return res;
 	}
 	
+	//achar a função I comparando com os primeiros 6 bits
 	private String tipoI(String res, String b) {
 		if(b.substring(0,6).equalsIgnoreCase("001111")) {
 			res = "lui";
@@ -308,7 +313,8 @@ private String registradorIDuplo(String res, String b) {
 		}
 		return res;
 	}
-
+	
+	//achar a função do tipo J comparando os 6 primeiros bits
 	private String tipoJ(String res, String b) {
 		if(b.substring(0,6).equalsIgnoreCase("000010")) {
 			res = "j";
@@ -316,24 +322,25 @@ private String registradorIDuplo(String res, String b) {
 			res = "jal";
 		}
 		res = res + " ";
-		//if(b.substring(6,32).equalsIgnoreCase("00000100000000000000000000")) {
-			res = res + "start";
-		//}
+		//o start não esta sendo tratado ainda, apenas retornando o start
+		res = res + "start";
 		return res;
 	}
 	
 	public static void main(String[] args) {
 		Parte1 p = new Parte1();
-				
-		String caminho = "C:\\Users\\Thiago\\Downloads\\entrada.txt";
+		//colocar o caminho de entrada correto
+		String caminhoEntrada = "C:\\Users\\Thiago\\Downloads\\entrada.txt";
+		//colocar o caminho de saida correto
+		String caminhoSaida = "C:\\Users\\Thiago\\Downloads\\saida.txt";
 		ArrayList<String> entrada = new ArrayList<>();
 		ArrayList<String> saida = new ArrayList<>();
 		
 		try {
-		      FileReader arq = new FileReader(caminho);
+		      FileReader arq = new FileReader(caminhoEntrada);
 		      BufferedReader lerArq = new BufferedReader(arq);
-
 		      String linha = lerArq.readLine(); // lê a primeira linha
+		      
 		      while (linha != null) {
 		        entrada.add(linha);
 		        linha = lerArq.readLine(); // lê da segunda até a última linha		        
@@ -344,17 +351,20 @@ private String registradorIDuplo(String res, String b) {
 		}
 		
 		FileWriter arq2 = null;
-		try {
-			arq2 = new FileWriter("C:\\Users\\Thiago\\Downloads\\saida.txt");
+		try {			
+			arq2 = new FileWriter(caminhoSaida);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 		PrintWriter gravarArq = new PrintWriter(arq2);
 		
 		for(int i = 0; i < entrada.size(); i++) {
-			String assembly = p.acharOp(p.hexToBin(entrada.get(i)));
-			System.out.println(assembly);
-			saida.add(assembly);
+			if(entrada.get(i) != null && entrada.get(i).isEmpty() == false && entrada.get(i) != "\n") {
+				//se a linha de comando não é nula nem vazia, vai para a função acharOp e retorna a string em comandos assembly
+				String assembly = p.acharOp(p.hexToBin(entrada.get(i)));
+				saida.add(assembly);
+			}
+			
 		}
 		
 		for(int i = 0; i < saida.size(); i++) {			
