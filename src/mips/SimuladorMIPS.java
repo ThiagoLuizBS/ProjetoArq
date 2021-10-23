@@ -4,7 +4,7 @@
  * 
  * Label Start será tratado na parte 3 do projeto.
  * 
- *	comentar
+ *	
  */
 package mips;
 import java.io.BufferedReader;
@@ -40,7 +40,7 @@ public class SimuladorMIPS{
 		this.valor = valor;
 	}
 
-	//registradores
+	//Banco de Registradores inicializados com zero
 	public ArrayList<SimuladorMIPS> registradores(){
 		ArrayList<SimuladorMIPS> r = new ArrayList<>();
 		r.add(new SimuladorMIPS("$0"));
@@ -80,7 +80,7 @@ public class SimuladorMIPS{
 		return r;
 	}
 	
-	//transformar hexadecimal para binario
+	//Funçao que transforma a entrada hexadecimal para binario
 	public String hexToBin(String hex){
 	    String bin = "";
 	    String binFragment = "";
@@ -100,7 +100,7 @@ public class SimuladorMIPS{
 	    return bin;
 	} 
 	
-	//transformar binario para decimal
+	//funçao que converte de binario para decimal
 	private int binDecimal(String x) {
 		boolean ehNegativo = false;
 		if(x.substring(0, 1).equalsIgnoreCase("1") && x.length() >= 16) {
@@ -115,6 +115,7 @@ public class SimuladorMIPS{
 		return numero;
 	}
 	
+	//funçao que converte de decimal para binario
 	private String decimalBin(int no) {
 		boolean c2 = false;
 		if(no < 0) {
@@ -142,6 +143,7 @@ public class SimuladorMIPS{
 	    return retorno;
 	}
 	
+	//Função que faz o complemento a 2 de números negativos
 	private String complementoa2(String bin) {
 		int cont = bin.length();
 		String aux = "";
@@ -177,7 +179,7 @@ public class SimuladorMIPS{
 	 *  opcode 6 bits / memory word adress 26 bits
 	 */	 
 	
-	//achar a operação pelo opcode: syscall, R, I ou J
+	//Funçao que verifica o opcode de cada tipo de instrução recebida na entrada: syscall, R, I ou J
 	public String acharOp(String b, ArrayList<SimuladorMIPS> lista) {
 		String res = "";
 		
@@ -199,13 +201,13 @@ public class SimuladorMIPS{
 		return res;
 	}
 	
-	//comando syscall
+	//Funçao criada para retornar a instruçao syscall
 	private String syscall(String res) {
 		res = "syscall";
 		return res;
 	}
 	
-	//tipos de registradores R que possuem 3 argumentos finais
+	//Funçao criada para as instruçoes do tipo R que tem como retorno 3 registradores
 	private String registradorRTriplo(String res, String b) {
 		if(res == "sllv" || res == "srlv" || res == "srav") {
 			res = res + " ";
@@ -221,7 +223,7 @@ public class SimuladorMIPS{
 		return res;
 	}
 	
-	//tipos de registradores R que possuem 2 argumentos finais
+	//Funçao criada para as instruçoes do tipo R que tem como retorno 2 registradores
 	private String registradorRDuplo(String res, String b) {
 		if(res == "mult" ||	res == "multu" || res == "div" || res == "divu") {
 			res = res + " ";
@@ -236,7 +238,7 @@ public class SimuladorMIPS{
 		return res;
 	}
 	
-	//tipos de registradores R que possuem 1 único argumento final
+	//Funçao criada para as instruçoes do tipo R que tem como retorno 1 registrador
 	private String registradorRUnico(String res, String b) {
 		if(res == "jr") {
 			res = res + " ";		
@@ -248,9 +250,10 @@ public class SimuladorMIPS{
 		return res;
 	}
 	
-	//achar a função R comparando com os ultimos 6 bits
+	//Todas as intruções do tipo R, sendo analisado pelo opcode extension. E sendo tratada em cada if as funções do tipos lógicas e aritmeticas 
 	private String tipoR(String res, String b, ArrayList<SimuladorMIPS> lista) {
 		if(b.substring(26, 32).equalsIgnoreCase("100000")) {
+			//função add - soma dois registradores
 			res = "add";
 			res = registradorRTriplo(res,b);
 			
@@ -260,6 +263,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(lista.get(id2).getValor() + lista.get(id3).getValor());
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("100010")) {
+			//função sub - diminui dois registradores
 			res = "sub";
 			res = registradorRTriplo(res,b);
 			
@@ -269,6 +273,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(lista.get(id2).getValor() - lista.get(id3).getValor());
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("101010")) {
+			//função slt - compara se um registrador é maior que o outro
 			res = "slt";
 			res = registradorRTriplo(res,b);
 			
@@ -281,6 +286,7 @@ public class SimuladorMIPS{
 			} else lista.get(id1).setValor(0);
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("100100")) {
+			//função lógica and entre dois registradores
 			res = "and";
 			res = registradorRTriplo(res,b);
 			
@@ -312,6 +318,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(binDecimal(and));
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("100101")) {
+			//função lógica or entre dois registradores
 			res = "or";	
 			res = registradorRTriplo(res,b);
 			
@@ -344,6 +351,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(binDecimal(or));	
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("100110")) {
+			//função lógica xor entre dois registradores
 			res = "xor";
 			res = registradorRTriplo(res,b);
 			
@@ -376,6 +384,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(binDecimal(xor));
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("100111")) {
+			//função lógica nor entre dois registradores
 			res = "nor";
 			res = registradorRTriplo(res,b);
 			
@@ -407,6 +416,7 @@ public class SimuladorMIPS{
 			
 			lista.get(id1).setValor(binDecimal(nor));
 		} else if(b.substring(26, 32).equalsIgnoreCase("010000")) {
+			//função para acessar o registrador hi
 			res = "mfhi";
 			res = registradorRUnico(res,b);
 			
@@ -415,6 +425,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(hi);
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("010010")) {
+			//função para acessar o registrador lo
 			res = "mflo";
 			res = registradorRUnico(res,b);
 			
@@ -422,6 +433,7 @@ public class SimuladorMIPS{
 			int lo = lista.get(this.acharRegs(lista, "lo")).getValor();
 			lista.get(id1).setValor(lo);
 		} else if(b.substring(26, 32).equalsIgnoreCase("100001")) {
+			//função addu - soma dois registradores sem sinal
 			res = "addu";	
 			res = registradorRTriplo(res,b);
 			//nao estamos verificando overflow ainda
@@ -431,6 +443,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(lista.get(id2).getValor() + lista.get(id3).getValor());
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("100011")) {
+			//função subu - subtração de dois registradores sem sinal
 			res = "subu";	
 			res = registradorRTriplo(res,b);
 			
@@ -440,6 +453,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(lista.get(id2).getValor() - lista.get(id3).getValor());
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("011000")) {
+			//função mult - multiplicação de dois registradores
 			res = "mult";	
 			res = registradorRDuplo(res,b);
 			
@@ -451,6 +465,7 @@ public class SimuladorMIPS{
 			lista.get(lo).setValor(lista.get(id1).getValor() * lista.get(id2).getValor());
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("011001")) {
+			//função multu - multiplicação de dois registradores sem sinal
 			res = "multu";	
 			res = registradorRDuplo(res,b);
 			
@@ -462,6 +477,7 @@ public class SimuladorMIPS{
 			lista.get(lo).setValor(lista.get(id1).getValor() * lista.get(id2).getValor());
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("011010")) {
+			//função div - divisão de dois registradores
 			res = "div";
 			res = registradorRDuplo(res,b);
 			
@@ -478,6 +494,7 @@ public class SimuladorMIPS{
 				lista.get(lo).setValor(0);
 			}			
 		} else if(b.substring(26, 32).equalsIgnoreCase("011011")) {
+			//função divu - divisão de dois registradores sem sinal
 			res = "divu";
 			res = registradorRDuplo(res,b);
 			
@@ -495,6 +512,7 @@ public class SimuladorMIPS{
 			}	
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("000000")) {
+			//função sll - anda o registrado para esquerda de acordo com o número passado como parametro
 			res = "sll";
 			res = registradorRDuplo(res,b);
 			
@@ -510,6 +528,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(binDecimal(rt));			
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("000010")) {
+			//função srl - anda o registrado para direita de acordo com o número passado como parametro
 			res = "srl";
 			res = registradorRDuplo(res,b);
 			
@@ -530,6 +549,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(binDecimal(aux));
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("000011")) {
+			//função sra - anda o registrado para direita preservando o bit de sinal de acordo com o número passado como parametro
 			res = "sra";
 			res = registradorRDuplo(res,b);
 			
@@ -560,6 +580,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(binDecimal(aux));
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("000100")) {
+			//função sllv - anda o registrado para esquerda de acordo com um registrador passado como parametro
 			res = "sllv";	
 			res = registradorRTriplo(res,b);
 			
@@ -576,6 +597,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(binDecimal(rt));
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("000110")) {
+			//função srlv - anda o registrado para direita de acordo com um registrador passado como parametro
 			res = "srlv";	
 			res = registradorRTriplo(res,b);
 			
@@ -597,6 +619,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(binDecimal(aux));
 			
 		} else if(b.substring(26, 32).equalsIgnoreCase("000111")) {
+			//função sra - anda o registrado para direita preservando o bit de sinal de acordo com um registrador passado como parametro
 			res = "srav";
 			res = registradorRTriplo(res,b);
 			
@@ -634,7 +657,7 @@ public class SimuladorMIPS{
 		return res;		
 	}
 	
-	//tipos de registradores I que possuem 3 argumentos finais
+	//Funçao criada para as instruçoes do tipo I que tem como retorno 3 registradores
 	private String registradorITriplo(String res, String b) {
 		if(res == "addi" || res == "slti" || res == "andi" || res == "ori" || res == "xori" || res == "addiu") {
 			res = res + " ";
@@ -651,7 +674,7 @@ public class SimuladorMIPS{
 		return res;
 	}
 	
-	//tipos de registradores I que possuem 2 argumentos finais
+	//Funçao criada para as instruçoes do tipo I que tem como retorno 2 registradores
 	private String registradorIDuplo(String res, String b) {
 		if(res == "lui") {
 			res = res + " ";
@@ -672,12 +695,13 @@ public class SimuladorMIPS{
 		return res;
 	}
 	
-	//achar a função I comparando com os primeiros 6 bits
+	//Todas as intruções do tipo I, sendo analisadas pelo opcode. E sendo tratada em cada if as funções do tipos lógicas e aritmeticas 
 	private String tipoI(String res, String b, ArrayList<SimuladorMIPS> lista) {
 		if(b.substring(0,6).equalsIgnoreCase("001111")) {
 			res = "lui";
 			res = registradorIDuplo(res,b);
 		} else if(b.substring(0,6).equalsIgnoreCase("001000")) {
+			//função addi - soma o número passado como parametro com o registrador
 			res = "addi";
 			res = registradorITriplo(res,b);
 			
@@ -688,6 +712,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(lista.get(id2).getValor() + num);
 			
 		} else if(b.substring(0,6).equalsIgnoreCase("001010")) {
+			//função slti - verifica se o registrador é menor que o numero passado como parametro
 			res = "slti";	
 			res = registradorITriplo(res,b);
 			
@@ -700,6 +725,7 @@ public class SimuladorMIPS{
 			} else lista.get(id1).setValor(0);
 			
 		} else if(b.substring(0,6).equalsIgnoreCase("001100")) {
+			//função lógica andi entre o registrador e numero passado como parametro
 			res = "andi";
 			res = registradorITriplo(res,b);
 			
@@ -733,6 +759,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(binDecimal(andi));
 			
 		} else if(b.substring(0,6).equalsIgnoreCase("001101")) {
+			//função lógica ori entre o registrador e numero passado como parametro
 			res = "ori";
 			res = registradorITriplo(res,b);
 			
@@ -765,6 +792,7 @@ public class SimuladorMIPS{
 			lista.get(id1).setValor(binDecimal(ori));	
 			
 		} else if(b.substring(0,6).equalsIgnoreCase("001110")) {
+			//função lógica xori entre o registrador e numero passado como parametro
 			res = "xori";
 			res = registradorITriplo(res,b);
 			
@@ -812,6 +840,7 @@ public class SimuladorMIPS{
 			res = "bne";
 			res = registradorITriplo(res,b);
 		} else if(b.substring(0,6).equalsIgnoreCase("001001")) {
+			//função addiu - soma o número passado como parametro com o registrador sem sinal
 			res = "addiu";
 			res = registradorITriplo(res,b);
 			
@@ -847,7 +876,7 @@ public class SimuladorMIPS{
 		return res;
 	}
 	
-	//printar registrador	
+	//Função printar registrador	
 	private String toStringRegs(ArrayList<SimuladorMIPS> lista) {
 		String stringRegs = "REGS[";
 		
@@ -862,10 +891,8 @@ public class SimuladorMIPS{
 		
 		return stringRegs;
 	}
-	
-	//verificar qual e o registrador e fazer a alteração
-	
-	//achar qual é o resgistrador
+		
+	//Função que acha qual é o resgistrador
 	private int acharRegs(ArrayList<SimuladorMIPS> lista, String nome) {
 		int indiceRegs = 0;
 		for(int i = 0; i < lista.size(); i++) {
@@ -882,10 +909,8 @@ public class SimuladorMIPS{
 		ArrayList<SimuladorMIPS> lista = simulador.registradores();		
 		
 		String localDir = System.getProperty("user.dir");
-		
-		//colocar o caminho de entrada correto
+		//Usamos os caminhos relativos
 		String caminhoEntrada = localDir + "\\entrada.txt";
-		//colocar o caminho de saida correto
 		String caminhoSaida = localDir + "\\saida.txt";
 		ArrayList<String> entrada = new ArrayList<>();
 		ArrayList<String> saida = new ArrayList<>();
@@ -917,14 +942,12 @@ public class SimuladorMIPS{
 				//se a linha de comando não é nula nem vazia, vai para a função acharOp e retorna a string em comandos assembly
 				String assembly = simulador.acharOp(simulador.hexToBin(entrada.get(i)),lista);
 				saida.add(assembly);
-				//System.out.println(assembly);
-				
+				//verifica se é uma função do tipo lógica ou aritmetica, se for printa o banco de registradores
 				if(assembly.contains("add") || assembly.contains("sub") || assembly.contains("mult") || assembly.contains("div") || assembly.contains("addu") || assembly.contains("subu") ||
 						assembly.contains("multu") || assembly.contains("divu") || assembly.contains("addiu") || assembly.contains("and") || assembly.contains("or") || assembly.contains("xor") ||
 						assembly.contains("nor") || assembly.contains("andi") || assembly.contains("ori") || assembly.contains("xori") || assembly.contains("addi") || assembly.contains("sll") ||
 						assembly.contains("srl") || assembly.contains("sra") || assembly.contains("srlv") || assembly.contains("sllv") || assembly.contains("srav")) {
 					saida.add(simulador.toStringRegs(lista));
-					//System.out.println(simulador.toStringRegs(lista));
 				}
 			}
 		}
