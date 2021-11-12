@@ -1,11 +1,12 @@
 /* 
- * Projeto MIPS
+ * Projeto MIPS - Parte 3
  * Equipe: André Felipe, Ricardo Alves e Thiago Luiz
- * 
- * Label Start será tratado na parte 3 do projeto.
  * 
  *	PC (Program Counter) adicionado, ele recebe o endereço inicial de 4194304 (0x00400000)
  *
+ *  Memoria criada, com 1024 entradas de 8 bits
+ *  Todo dado salvo na memória em hexadecimal (até 2 casas por entrada) e nos registradores em decimal
+ *  
  */
 package mips;
 import java.io.BufferedReader;
